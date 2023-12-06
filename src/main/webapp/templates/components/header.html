@@ -1,0 +1,15 @@
+<header  class="navbar fixed-top p-0 bg-white box-shadow border-bottom p-2">
+    <div class="d-flex align-items-center justify-content-between w-100">
+        <a class="navbar-brand me-auto ms-3 my-0 text-body" th:href="@{/}">Weather</a>
+        <div class="d-flex align-items-center justify-center">
+            <th:block th:if="${login}">
+                <th:block th:text="${login}"/>
+                <button class="btn btn-outline-primary ms-3 me-2" id="logout-button">Logout</button>
+            </th:block>
+            <th:block th:if="not ${login}">
+                <a class="btn btn-primary mx-2" th:href="@{../login}" role="button">Login</a>
+                <a class="btn btn-outline-primary mx-2" th:href="@{../register}" role="button">Registration</a>
+            </th:block>
+        </div>
+    </div>
+</header>

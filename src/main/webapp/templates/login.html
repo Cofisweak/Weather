@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <th:block th:insert="components/default-head"/>
+    <title>Login | Weather</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<th:block th:insert="components/header"/>
+<main class="container d-flex align-items-center flex-column justify-center m-auto">
+    <h2 class="text-body text-uppercase">login</h2>
+    <form method="post" class="form">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">@</div>
+                </div>
+                <input type="text" class="form-control" name="username" required id="username"
+                       placeholder="Enter username" th:value="${inputLogin}">
+            </div>
+            <span th:if="${incorrectUsername}" class="form-text text-danger">Incorrect username</span>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" name="password" required id="password"
+                   placeholder="Enter password">
+            <span th:if="${incorrectPassword}" class="form-text text-danger">Incorrect password</span>
+            <span th:if="${isAuthorizationInvalid}" class="form-text text-danger">Invalid username or password</span>
+        </div>
+        <button type="submit" class="btn btn-primary d-flex m-auto mt-4">Login</button>
+    </form>
+</main>
+<th:block th:insert="components/footer"/>
+</body>
+
+</html>

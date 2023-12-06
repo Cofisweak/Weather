@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <th:block th:insert="components/default-head"/>
+    <title>Register | Weather</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<th:block th:insert="components/header"/>
+<main class="container d-flex align-items-center flex-column justify-center m-auto">
+    <h2 class="text-body text-uppercase">Registration</h2>
+    <form class="form" method="post">
+        <div class="form-group mb-2">
+            <label for="username">Username:</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">@</div>
+                </div>
+                <input type="text" class="form-control" name="username" required id="username"
+                       placeholder="Enter username" th:value="${inputLogin}">
+            </div>
+            <span th:if="${incorrectUsername}" class="form-text text-danger">Incorrect username</span>
+            <span th:if="${usernameAlreadyExists}" class="form-text text-danger">Username already exists</span>
+            <span th:if="${tooShortUsername}" class="form-text text-danger">Username too short</span>
+        </div>
+        <div class="form-group mt-4">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" name="password" required id="password"
+                   placeholder="Enter password">
+            <span th:if="${incorrectPassword}" class="form-text text-danger">Password must be 8-20 characters long, contains at least one uppercase letter and one number</span>
+        </div>
+        <div class="form-group mt-2">
+            <label for="repeat-password">Repeat Password:</label>
+            <input type="password" class="form-control" name="repeat-password" required id="repeat-password"
+                   placeholder="Enter password">
+            <span th:if="${passwordsNotEquals}" class="form-text text-danger">Passwords must be equals</span>
+        </div>
+        <button type="submit" class="btn btn-primary d-flex m-auto mt-4">Register</button>
+    </form>
+</main>
+<th:block th:insert="components/footer"/>
+</body>
+
+</html>
