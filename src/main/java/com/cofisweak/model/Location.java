@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "locations")
+@Table(name = "locations", indexes = {
+        @Index(columnList = "latitude, longitude")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,6 +19,7 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(unique = true)
     private String name;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
