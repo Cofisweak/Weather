@@ -1,6 +1,6 @@
 <section class="mx-auto mt-4">
-    <form class="d-flex align-items-center box-shadow p-1 bg-white border border-2 rounded-pill" method="post">
-        <input class="form-control ms-1 border-0 search" type="text" name="query" id="query" placeholder="Enter city name...">
+    <form class="d-flex align-items-center box-shadow p-1 bg-white border border-2 rounded-pill" method="post" th:action="@{/search}">
+        <input class="form-control ms-1 border-0 search" type="text" name="query" id="query" required th:value="${query}" placeholder="Enter city name...">
         <button class="btn" type="submit">
             <svg class="width" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <path
