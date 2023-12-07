@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import org.thymeleaf.TemplateEngine;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
@@ -22,8 +26,8 @@ public class Utils {
         return field == null || field.isBlank();
     }
 
-    public static boolean isCorrectPassword(String username) {
-        return username.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$");
+    public static boolean isInvalidPassword(String username) {
+        return !username.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$");
     }
 
     public static void saveSessionCookie(HttpServletResponse resp, Session session) {
@@ -52,5 +56,14 @@ public class Utils {
     public static void resetCookie(Cookie cookie, HttpServletResponse response) {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
+    }
+
+    public static HttpResponse<String> getResponse(URI uri) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(uri)
+                .GET()
+                .build();
+        return HttpClient.newBuilder()
+                .build()
+                .send(request, HttpResponse.BodyHandlers.ofString());
     }
 }

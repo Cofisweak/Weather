@@ -71,7 +71,7 @@ public class LoginServlet extends HttpServlet {
         if (Utils.isFieldNotFilled(username) || username.trim().length() < 3) {
             errors.put("incorrectUsername", true);
         }
-        if (Utils.isFieldNotFilled(password) || !Utils.isCorrectPassword(password)) {
+        if (Utils.isFieldNotFilled(password) || Utils.isInvalidPassword(password)) {
             errors.put("incorrectPassword", true);
         }
         return errors;

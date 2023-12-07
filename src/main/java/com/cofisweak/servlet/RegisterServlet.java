@@ -74,7 +74,7 @@ public class RegisterServlet extends HttpServlet {
         } else if (username.trim().length() < 3) {
             errors.put("tooShortUsername", true);
         }
-        if (Utils.isFieldNotFilled(password) || !Utils.isCorrectPassword(password)) {
+        if (Utils.isFieldNotFilled(password) || Utils.isInvalidPassword(password)) {
             errors.put("incorrectPassword", true);
         } else if (!password.equals(repeatPassword)) {
             errors.put("passwordsNotEquals", true);
