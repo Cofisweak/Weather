@@ -4,7 +4,9 @@
         <div class="d-flex align-items-center justify-center">
             <th:block th:if="${login}">
                 <th:block th:text="${login}"/>
-                <button class="btn btn-outline-primary ms-3 me-2" id="logout-button">Logout</button>
+                <form th:action="@{/logout}" method="POST">
+                    <button class="btn btn-outline-primary ms-3 me-2" type="submit">Logout</button>
+                </form>
             </th:block>
             <th:block th:if="not ${login}">
                 <a class="btn btn-primary mx-2" th:href="@{/login}" role="button">Login</a>

@@ -24,5 +24,6 @@ public class LogoutServlet extends HttpServlet {
         Cookie cookie = cookieOptional.get();
         cookie.setMaxAge(0);
         resp.addCookie(cookie);
+        Utils.redirectToMainPage(req, resp);
     }
 }
