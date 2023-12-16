@@ -1,4 +1,4 @@
-package com.cofisweak.servlet;
+package com.cofisweak.servlet.auth;
 
 import com.cofisweak.exception.IncorrectPasswordException;
 import com.cofisweak.exception.UserNotFoundException;
@@ -6,10 +6,10 @@ import com.cofisweak.model.Session;
 import com.cofisweak.model.User;
 import com.cofisweak.service.AuthService;
 import com.cofisweak.service.SessionService;
-import com.cofisweak.util.ThymeleafUtil;
+import com.cofisweak.servlet.BaseServlet;
+import com.cofisweak.util.SessionUtil;
 import com.cofisweak.util.Utils;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.thymeleaf.TemplateEngine;
@@ -19,20 +19,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.cofisweak.util.Utils.getTemplateEngine;
-
 @WebServlet("/login")
-public class LoginServlet extends HttpServlet {
-    private final transient AuthService authService = AuthService.getInstance();
-    private final transient SessionService sessionService = SessionService.getInstance();
+public class LoginServlet extends BaseServlet {
+    private final transient AuthService authService = new AuthService();
+    private final transient SessionService sessionService = new SessionService();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        if (Utils.isUserAuthed(req)) {
+        if (SessionUtil.isUserAuthed(req)) {
             Utils.redirectToMainPage(req, resp);
             return;
         }
-        TemplateEngine templateEngine = getTemplateEngine(req);
-        WebContext webContext = ThymeleafUtil.buildWebContext(req, resp);
         templateEngine.process("login", webContext, resp.getWriter());
     }
 
@@ -40,8 +36,6 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        TemplateEngine templateEngine = getTemplateEngine(req);
-        WebContext webContext = ThymeleafUtil.buildWebContext(req, resp);
         Map<String, Object> errors = validateRequest(username, password);
 
         if (!errors.isEmpty()) {
@@ -53,7 +47,7 @@ public class LoginServlet extends HttpServlet {
         try {
             User user = authService.login(username.trim(), password);
             Session session = sessionService.createSession(user);
-            Utils.saveSessionCookie(resp, session);
+            SessionUtil.saveSessionCookie(resp, session);
             Utils.redirectToMainPage(req, resp);
         } catch (UserNotFoundException | IncorrectPasswordException e) {
             webContext.setVariable("isAuthorizationInvalid", true);

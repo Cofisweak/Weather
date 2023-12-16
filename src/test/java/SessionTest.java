@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 class SessionTest {
-    private final SessionService sessionService = SessionService.getInstance();
+    private final SessionService sessionService = new SessionService();
     private static User user;
 
     @BeforeAll
     static void initUser() throws UsernameAlreadyExistsException {
-        AuthService authService = AuthService.getInstance();
+        AuthService authService = new AuthService();
         user = authService.register("sessionTest", "sessionTest");
     }
 

@@ -1,6 +1,5 @@
 package com.cofisweak.util;
 
-import com.cofisweak.model.Session;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,12 +30,7 @@ public class ThymeleafUtil {
         ServletContext servletContext = req.getServletContext();
         JakartaServletWebApplication application = JakartaServletWebApplication.buildApplication(servletContext);
         IServletWebExchange webExchange = application.buildExchange(req, resp);
-        WebContext webContext = new WebContext(webExchange);
-        Session session = (Session) req.getAttribute("session");
-        if (session != null) {
-            webContext.setVariable("login", session.getUser().getLogin());
-        }
-        return webContext;
+        return new WebContext(webExchange);
     }
 
     private static ITemplateResolver buildTemplateResolver(IWebApplication webApplication) {

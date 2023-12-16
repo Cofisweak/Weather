@@ -1,33 +1,28 @@
 package com.cofisweak.service;
 
-import com.cofisweak.dao.UserDao;
+import com.cofisweak.dao.UserRepository;
 import com.cofisweak.exception.IncorrectPasswordException;
 import com.cofisweak.exception.UserNotFoundException;
 import com.cofisweak.exception.UsernameAlreadyExistsException;
 import com.cofisweak.model.User;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.hibernate.exception.ConstraintViolationException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Optional;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthService {
-    private static final AuthService INSTANCE = new AuthService();
-    private final UserDao userDao = UserDao.getInstance();
+    private final UserRepository userRepository = new UserRepository();
 
     public User login(String username, String password) throws IncorrectPasswordException, UserNotFoundException {
-        Optional<User> user = userDao.getUserByLogin(username);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        String hashedPassword = user.get().getPassword();
+        Optional<User> userOptional = userRepository.getUserByLogin(username);
+        User user = userOptional.orElseThrow(UserNotFoundException::new);
+
+        String hashedPassword = user.getPassword();
         if (!BCrypt.checkpw(password, hashedPassword)) {
             throw new IncorrectPasswordException();
         }
-        return user.get();
+        return userOptional.get();
     }
 
     @SneakyThrows
@@ -38,14 +33,10 @@ public class AuthService {
                 .password(hashedPassword)
                 .build();
         try {
-            userDao.persist(user);
+            userRepository.save(user);
         } catch (ConstraintViolationException e) {
             throw new UsernameAlreadyExistsException();
         }
         return user;
-    }
-
-    public static AuthService getInstance() {
-        return INSTANCE;
     }
 }

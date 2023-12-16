@@ -1,0 +1,44 @@
+<!--    /*@thymesVar id="weather" type="com.cofisweak.dto.WeatherDto"*/-->
+<div class="card-body ps-0" th:fragment="cardBody(weather)">
+    <div class="d-flex align-items-center justify-content-between text-center">
+        <div>
+            <img id="weatherIcon" th:src="|https://openweathermap.org/img/wn/${weather.icon}${'@'}4x.png|"
+                 alt="weather icon">
+            <div>
+                <h5 class="card-title mb-0" th:text="${weather.name}">Minsk, BY</h5>
+                <div class="card-text text-muted" th:if="${weather.state}" th:text="${weather.state}">Krasnoyarsk Krai
+                </div>
+                <div class="card-text" th:text="|relevant at ${weather.time}|">12:00</div>
+            </div>
+        </div>
+        <div>
+            <h1 class="card-text mb-0" th:text="|${weather.temperature}${'°'}С|">-4°C</h1>
+            <div class="card-text text-muted" th:text="|feels like ${weather.feelsLikeTemperature}${'°'}С|">
+                feels like -4°C
+            </div>
+            <div class="card-text mt-2" th:text="${weather.weatherName}">Clouds</div>
+            <div class="card-text" th:text="${weather.description}">broken clouds</div>
+            <th:block th:switch="${weather.buttonType.name()}">
+                <div th:case="'NOT_AUTHORIZED'" class="weather-card__button" data-bs-toggle="tooltip"
+                     data-bs-placement="top" title="Log in to save location">
+                    <button class="btn btn-secondary disabled">Follow</button>
+                </div>
+                <form th:case="'CAN_UNFOLLOW'" th:action="@{/unfollow}" method="post">
+                    <input type="hidden" th:value="${weather.id}" th:name="id">
+                    <button class="btn btn-danger weather-card__button" type="submit">Unfollow</button>
+                </form>
+                <form th:case="'CAN_FOLLOW'" method="post" th:action="@{/follow}">
+                    <input type="hidden" th:value="${weather.name}" th:name="name">
+                    <input type="hidden" th:value="${weather.state}" th:name="state">
+                    <input type="hidden" th:value="${weather.longitude}" th:name="lon">
+                    <input type="hidden" th:value="${weather.latitude}" th:name="lat">
+                    <button class="btn btn-success weather-card__button" type="submit">Follow</button>
+                </form>
+                <div th:case="'ALREADY_FOLLOWED'" class="weather-card__button" data-bs-toggle="tooltip"
+                     data-bs-placement="top" title="Location already followed">
+                    <button class="btn btn-secondary disabled">Follow</button>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>

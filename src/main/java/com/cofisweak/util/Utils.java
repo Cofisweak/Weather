@@ -1,7 +1,7 @@
 package com.cofisweak.util;
 
-import com.cofisweak.model.Session;
-import jakarta.servlet.http.Cookie;
+import com.cofisweak.dto.WeatherCardActionButtonType;
+import com.cofisweak.dto.WeatherDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -13,9 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
@@ -30,32 +28,8 @@ public class Utils {
         return !username.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$");
     }
 
-    public static void saveSessionCookie(HttpServletResponse resp, Session session) {
-        Cookie cookie = new Cookie("session", session.getId().toString());
-        resp.addCookie(cookie);
-    }
-
-    public static Optional<Cookie> getCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(value -> value.getName().equals("session"))
-                .findFirst();
-    }
-
-    public static boolean isUserAuthed(HttpServletRequest req) {
-        return req.getAttribute("session") != null;
-    }
-
     public static void redirectToMainPage(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.sendRedirect(req.getContextPath() + "/");
-    }
-
-    public static boolean isSessionExpired(Session session) {
-        return LocalDateTime.now().isAfter(session.getExpiresAt());
-    }
-
-    public static void resetCookie(Cookie cookie, HttpServletResponse response) {
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
     }
 
     public static HttpResponse<String> getResponse(URI uri) throws IOException, InterruptedException {
@@ -65,5 +39,9 @@ public class Utils {
         return HttpClient.newBuilder()
                 .build()
                 .send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static void setButtonTypesForWeatherList(List<WeatherDto> list, WeatherCardActionButtonType buttonType) {
+        list.forEach(weatherDto -> weatherDto.setButtonType(buttonType));
     }
 }

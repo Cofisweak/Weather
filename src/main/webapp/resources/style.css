@@ -10,6 +10,35 @@ main {
     box-shadow: none;
 }
 
+.card-body {
+    margin: auto;
+    width: 22rem;
+    position: relative;
+}
+
 .form {
     width: 300px;
+}
+
+.weather-card__button {
+    position: relative;
+    top: 2.5rem;
+}
+
+@media (min-width: 1400px) {
+    .weather-card {
+        width: 33.3%;
+    }
+}
+
+@media (max-width: 1400px) {
+    .weather-card {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .weather-card {
+        width: 100%;
+    }
 }

@@ -5,12 +5,19 @@ import com.cofisweak.model.User;
 import com.cofisweak.service.AuthService;
 import com.cofisweak.util.HibernateUtil;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthTest {
 
-    private final AuthService authService = AuthService.getInstance();
+    private final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+    private AuthService authService;
+
+    @BeforeEach
+    void setUp() {
+        authService = new AuthService();
+    }
 
     @Test
     @Order(1)
@@ -19,7 +26,7 @@ class AuthTest {
         String password = "password";
         User createdUser = authService.register(username, password);
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             User user = session.get(User.class, createdUser.getId());
             Assertions.assertEquals(username, user.getLogin());
             Assertions.assertEquals(1L, user.getId());
@@ -42,7 +49,7 @@ class AuthTest {
         String password = "password";
         User createdUser = authService.login(username, password);
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             User user = session.get(User.class, createdUser.getId());
             Assertions.assertEquals(username, user.getLogin());
             Assertions.assertEquals(1L, user.getId());

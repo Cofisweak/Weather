@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <th:block th:insert="components/default-head"/>
+    <title>Search | Weather</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<th:block th:insert="components/header"/>
+<main class="d-flex justify-center flex-column w-100">
+    <th:block th:insert="components/search-form"/>
+    <section class="container mt-1">
+        <h6 th:if="not ${query}" class="text text-center mt-4">Enter the name of the location you are looking for</h6>
+        <h6 th:if="${weatherList && weatherList.isEmpty()}" class="text text-center mt-4">No results found</h6>
+        <div class="d-flex flex-wrap align-items-center">
+            <div th:each="weather: ${weatherList}" th:insert="components/weather-card :: cardBody(${weather})" class="weather-card"></div>
+        </div>
+    </section>
+</main>
+<th:block th:insert="components/footer"/>
+</body>
+
+</html>

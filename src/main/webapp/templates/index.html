@@ -9,24 +9,15 @@
 <body class="d-flex flex-column min-vh-100">
 <th:block th:insert="components/header"/>
 <main class="d-flex justify-center flex-column w-100">
-    <th:block th:insert="components/search"/>
+    <th:block th:insert="components/search-form"/>
     <section class="container mt-1">
-        <th:block th:if="${login}">
-            <div class="row">
-                <div class=" text-center col-md-4 col-sm-6 col-xl-3">
-                    <img src="https://openweathermap.org/img/wn/11n@4x.png" alt="weather icon">
-                    <div class="card-body">
-                        <h4 class="card-title">Minsk, BY</h4>
-                        <p class="card-text">-3°C</p>
-                        <p class="card-text">Snow, light snow</p>
-                    </div>
-                    <a class="btn btn-danger" href="#" role="button">Remove</a>
-                </div>
+        <th:block th:if="${isAuth}">
+            <h6 th:if="${weatherList && weatherList.isEmpty()}" class="text text-center mt-4">The list of followed locations is empty</h6>
+            <div class="d-flex flex-wrap align-items-center">
+                <div th:each="weather: ${weatherList}" th:insert="components/weather-card :: cardBody(${weather})" class="weather-card"></div>
             </div>
         </th:block>
-        <th:block th:if="not ${login}">
-            <h6 class="text text-center mt-4">Log in to view the list of saved locations</h6>
-        </th:block>
+        <h6 th:if="not ${isAuth}" class="text text-center mt-4">Log in to view the list of saved locations</h6>
     </section>
 </main>
 <th:block th:insert="components/footer"/>

@@ -1,5 +1,6 @@
 package com.cofisweak.dto;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,17 +9,16 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class WeatherInfoDto {
+public class LocationInfoDto {
+    @SerializedName("name")
     private String city;
-    private BigDecimal longitude;
-    private BigDecimal latitude;
     private String country;
-    private String weatherName;
-    private String description;
-    private String icon;
-    private Double temperature;
-    private Double feelsLikeTemperature;
+    @SerializedName("lon")
+    private BigDecimal longitude;
+    @SerializedName("lat")
+    private BigDecimal latitude;
+    private String state;
 }

@@ -1,19 +1,15 @@
 package com.cofisweak.service;
 
-import com.cofisweak.dao.SessionDao;
+import com.cofisweak.dao.SessionRepository;
 import com.cofisweak.model.Session;
 import com.cofisweak.model.User;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SessionService {
-    private static final SessionService INSTANCE = new SessionService();
-    private final SessionDao sessionDao = SessionDao.getInstance();
+    private final SessionRepository sessionRepository = new SessionRepository();
 
     public Session createSession(User user) {
         LocalDateTime expiresAt = LocalDateTime.now().plusHours(1);
@@ -23,18 +19,18 @@ public class SessionService {
                 .user(user)
                 .expiresAt(expiresAt)
                 .build();
-        return sessionDao.save(session);
+        return sessionRepository.save(session);
     }
 
     public void removeSession(Session session) {
-        sessionDao.remove(session);
-    }
-
-    public static SessionService getInstance() {
-        return INSTANCE;
+        sessionRepository.delete(session);
     }
 
     public Optional<Session> getSession(UUID uuid) {
-        return sessionDao.get(uuid);
+        return sessionRepository.getById(uuid);
+    }
+
+    public void removeExpiredSessions() {
+        sessionRepository.removeExpiredSessions();
     }
 }

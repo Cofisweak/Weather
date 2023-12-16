@@ -17,4 +17,7 @@
         <servlet-name>default</servlet-name>
         <url-pattern>/resources/*</url-pattern>
     </servlet-mapping>
+    <error-page>
+        <location>/error</location>
+    </error-page>
 </web-app>

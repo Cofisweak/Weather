@@ -1,11 +1,9 @@
 package com.cofisweak.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,12 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Data
-public class Session {
+@ToString(exclude = "user")
+public class Session implements Serializable {
     @Id
     private UUID id;
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
-    @Column(name = "expiresAt")
+    @Column(name = "expiresAt", nullable = false)
     private LocalDateTime expiresAt;
 }
