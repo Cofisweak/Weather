@@ -2,12 +2,12 @@
 <html lang="en">
 
 <head>
-    <th:block th:insert="components/default-head"/>
+    <th:block th:insert="~{components/default-head}"/>
     <title>Register | Weather</title>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-<th:block th:insert="components/header"/>
+<th:block th:insert="~{components/header}"/>
 <main class="container d-flex align-items-center flex-column justify-center m-auto">
     <h2 class="text-body text-uppercase">Registration</h2>
     <form class="form" method="post">
@@ -39,7 +39,7 @@
         <button type="submit" class="btn btn-primary d-flex m-auto mt-4">Register</button>
     </form>
 </main>
-<th:block th:insert="components/footer"/>
+<th:block th:insert="~{components/footer}"/>
 </body>
 
 </html>

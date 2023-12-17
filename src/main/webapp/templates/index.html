@@ -2,25 +2,25 @@
 <html lang="en">
 
 <head>
-    <th:block th:insert="components/default-head"/>
+    <th:block th:insert="~{components/default-head}"/>
     <title>Home | Weather</title>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-<th:block th:insert="components/header"/>
+<th:block th:insert="~{components/header}"/>
 <main class="d-flex justify-center flex-column w-100">
-    <th:block th:insert="components/search-form"/>
+    <th:block th:insert="~{components/search-form}"/>
     <section class="container mt-1">
         <th:block th:if="${isAuth}">
             <h6 th:if="${weatherList && weatherList.isEmpty()}" class="text text-center mt-4">The list of followed locations is empty</h6>
             <div class="d-flex flex-wrap align-items-center">
-                <div th:each="weather: ${weatherList}" th:insert="components/weather-card :: cardBody(${weather})" class="weather-card"></div>
+                <div th:each="weather: ${weatherList}" th:insert="~{components/weather-card :: cardBody(${weather})}" class="weather-card"></div>
             </div>
         </th:block>
         <h6 th:if="not ${isAuth}" class="text text-center mt-4">Log in to view the list of saved locations</h6>
     </section>
 </main>
-<th:block th:insert="components/footer"/>
+<th:block th:insert="~{components/footer}"/>
 </body>
 
 </html>
