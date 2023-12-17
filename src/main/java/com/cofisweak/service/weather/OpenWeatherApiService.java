@@ -84,7 +84,7 @@ public class OpenWeatherApiService implements WeatherService {
     private URI buildSearchLocationsUri(String query) throws URISyntaxException {
         String queryParam = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String uri = host + "geo/1.0/direct?" +
-                     "limit=9" +
+                     "limit=0" +
                      "&q=" + queryParam +
                      "&appid=" + appid;
         return new URI(uri);
