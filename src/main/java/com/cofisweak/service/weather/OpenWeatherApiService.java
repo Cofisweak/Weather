@@ -15,10 +15,8 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +28,8 @@ public class OpenWeatherApiService implements WeatherService {
 
     private WeatherResponseDto searchWeatherByCoordinates(BigDecimal longitude, BigDecimal latitude) {
         try {
-            URI uri = buildGetWeatherUri(longitude, latitude);
-            HttpResponse<String> response = Utils.getResponse(uri);
-            String content = response.body();
-            return gson.fromJson(content, WeatherResponseDto.class);
+            String response = requestWeather(longitude, latitude);
+            return gson.fromJson(response, WeatherResponseDto.class);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new CannotGetApiResponseException("The request cannot be completed");
         }
@@ -48,10 +44,8 @@ public class OpenWeatherApiService implements WeatherService {
     @Override
     public List<WeatherDto> searchLocationsAndWeatherByQuery(String query) {
         try {
-            URI uri = buildSearchLocationsUri(query);
-            HttpResponse<String> response = Utils.getResponse(uri);
-            String content = response.body();
-            return getWeatherDtos(content);
+            String response = requestLocations(query);
+            return getWeatherDtos(response);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new CannotGetApiResponseException("The request cannot be completed");
         }
@@ -72,21 +66,21 @@ public class OpenWeatherApiService implements WeatherService {
         return result;
     }
 
-    private URI buildGetWeatherUri(BigDecimal longitude, BigDecimal latitude) throws URISyntaxException {
-        String uri = host + "data/2.5/weather?" +
-                     "lat=" + latitude.toString() +
-                     "&lon=" + longitude.toString() +
-                     "&units=metric" +
-                     "&appid=" + appid;
-        return new URI(uri);
+    private String requestWeather(BigDecimal longitude, BigDecimal latitude) throws URISyntaxException, IOException, InterruptedException {
+        String uriString = host + "data/2.5/weather?" +
+                           "lat=" + latitude.toString() +
+                           "&lon=" + longitude.toString() +
+                           "&units=metric" +
+                           "&appid=" + appid;
+        return Utils.getResponseContent(uriString);
     }
 
-    private URI buildSearchLocationsUri(String query) throws URISyntaxException {
+    private String requestLocations(String query) throws URISyntaxException, IOException, InterruptedException {
         String queryParam = URLEncoder.encode(query, StandardCharsets.UTF_8);
-        String uri = host + "geo/1.0/direct?" +
-                     "limit=0" +
-                     "&q=" + queryParam +
-                     "&appid=" + appid;
-        return new URI(uri);
+        String uriString = host + "geo/1.0/direct?" +
+                           "limit=0" +
+                           "&q=" + queryParam +
+                           "&appid=" + appid;
+        return Utils.getResponseContent(uriString);
     }
 }

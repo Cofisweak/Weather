@@ -2,6 +2,7 @@ package com.cofisweak.util;
 
 import com.cofisweak.dto.WeatherCardActionButtonType;
 import com.cofisweak.dto.WeatherDto;
+import com.cofisweak.exception.CannotGetApiResponseException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -10,6 +11,7 @@ import org.thymeleaf.TemplateEngine;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -32,13 +34,23 @@ public class Utils {
         resp.sendRedirect(req.getContextPath() + "/");
     }
 
-    public static HttpResponse<String> getResponse(URI uri) throws IOException, InterruptedException {
+    public static HttpResponse<String> doRequest(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(uri)
                 .GET()
                 .build();
-        return HttpClient.newBuilder()
+        HttpResponse<String> response = HttpClient.newBuilder()
                 .build()
                 .send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new CannotGetApiResponseException("Weather service is currently unavailable");
+        }
+        return response;
+    }
+
+    public static String getResponseContent(String uriString) throws URISyntaxException, IOException, InterruptedException {
+        URI uri = new URI(uriString);
+        HttpResponse<String> response = Utils.doRequest(uri);
+        return response.body();
     }
 
     public static void setButtonTypesForWeatherList(List<WeatherDto> list, WeatherCardActionButtonType buttonType) {
