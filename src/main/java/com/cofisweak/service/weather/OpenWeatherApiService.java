@@ -8,28 +8,31 @@ import com.cofisweak.mapper.LocationMapper;
 import com.cofisweak.mapper.WeatherMapper;
 import com.cofisweak.model.Location;
 import com.cofisweak.util.PropertiesUtil;
-import com.cofisweak.util.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Log4j
 public class OpenWeatherApiService implements WeatherService {
     private static final String host = PropertiesUtil.get("OPENWEATHER_HOST");
     private static final String appid = PropertiesUtil.get("OPENWEATHER_APPID");
     private final Gson gson;
     private final HttpClient httpClient;
-    //TODO
 
     private WeatherResponseDto searchWeatherByCoordinates(BigDecimal longitude, BigDecimal latitude) {
         try {
@@ -57,7 +60,8 @@ public class OpenWeatherApiService implements WeatherService {
     }
 
     private List<WeatherDto> getWeatherDtos(String content) {
-        Type listType = new TypeToken<List<LocationInfoDto>>() {}.getType();
+        Type listType = new TypeToken<List<LocationInfoDto>>() {
+        }.getType();
         List<LocationInfoDto> dtoList = gson.fromJson(content, listType);
 
         List<Location> locations = dtoList.stream().map(LocationMapper::mapFrom).toList();
@@ -72,20 +76,33 @@ public class OpenWeatherApiService implements WeatherService {
     }
 
     private String requestWeather(BigDecimal longitude, BigDecimal latitude) throws URISyntaxException, IOException, InterruptedException {
-        String uriString = host + "data/2.5/weather?" +
+        String uri = host + "data/2.5/weather?" +
                            "lat=" + latitude.toString() +
                            "&lon=" + longitude.toString() +
                            "&units=metric" +
                            "&appid=" + appid;
-        return Utils.getResponseContent(uriString);
+        return doRequest(uri);
     }
 
     private String requestLocations(String query) throws URISyntaxException, IOException, InterruptedException {
         String queryParam = URLEncoder.encode(query, StandardCharsets.UTF_8);
-        String uriString = host + "geo/1.0/direct?" +
+        String uri = host + "geo/1.0/direct?" +
                            "limit=0" +
                            "&q=" + queryParam +
                            "&appid=" + appid;
-        return Utils.getResponseContent(uriString);
+        return doRequest(uri);
+    }
+
+    public String doRequest(String uriString) throws IOException, InterruptedException, URISyntaxException {
+        URI uri = new URI(uriString);
+        HttpRequest request = HttpRequest.newBuilder(uri)
+                .GET()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            log.error(response);
+            throw new CannotGetApiResponseException("Weather service is currently unavailable");
+        }
+        return response.body();
     }
 }
