@@ -11,14 +11,22 @@ import com.cofisweak.model.Location;
 import com.cofisweak.model.User;
 import com.cofisweak.service.weather.OpenWeatherApiService;
 import com.cofisweak.service.weather.WeatherService;
+import com.google.gson.Gson;
+import org.hibernate.SessionFactory;
 
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class LocationService {
-    private final LocationRepository locationRepository = new LocationRepository();
-    private final WeatherService weatherService = new OpenWeatherApiService();
+    private final LocationRepository locationRepository;
+    private final WeatherService weatherService;
+
+    public LocationService(SessionFactory sessionFactory, Gson gson, HttpClient httpClient) {
+        locationRepository = new LocationRepository(sessionFactory);
+        weatherService = new OpenWeatherApiService(gson, httpClient);
+    }
 
     public void saveLocation(Location location) throws LocationAlreadyExistsException {
         locationRepository.save(location);

@@ -11,20 +11,25 @@ import com.cofisweak.util.PropertiesUtil;
 import com.cofisweak.util.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class OpenWeatherApiService implements WeatherService {
     private static final String host = PropertiesUtil.get("OPENWEATHER_HOST");
     private static final String appid = PropertiesUtil.get("OPENWEATHER_APPID");
-    private final Gson gson = new Gson();
+    private final Gson gson;
+    private final HttpClient httpClient;
+    //TODO
 
     private WeatherResponseDto searchWeatherByCoordinates(BigDecimal longitude, BigDecimal latitude) {
         try {

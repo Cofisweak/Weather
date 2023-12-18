@@ -1,6 +1,5 @@
 package com.cofisweak.dao;
 
-import com.cofisweak.util.HibernateUtil;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,7 +9,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public abstract class BaseRepository<K extends Serializable, E extends Serializable> {
-    protected final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+    protected final SessionFactory sessionFactory;
     protected final Class<E> clazz;
 
     public E save(E object) {

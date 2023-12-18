@@ -5,13 +5,15 @@ import com.cofisweak.model.Session;
 import com.cofisweak.service.SessionService;
 import com.cofisweak.util.SessionUtil;
 import com.cofisweak.util.ThymeleafUtil;
-import com.cofisweak.util.Utils;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j;
+import org.hibernate.SessionFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -23,13 +25,22 @@ import static jakarta.servlet.http.HttpServletResponse.*;
 
 @Log4j
 public class BaseServlet extends HttpServlet {
-    private final SessionService sessionService = new SessionService();
-    protected TemplateEngine templateEngine;
-    protected WebContext webContext;
+    protected SessionFactory sessionFactory = null;
+    protected TemplateEngine templateEngine = null;
+    protected WebContext webContext = null;
+    private SessionService sessionService = null;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ServletContext servletContext = config.getServletContext();
+        templateEngine = (TemplateEngine) servletContext.getAttribute("templateEngine");
+        sessionFactory = (SessionFactory) servletContext.getAttribute("sessionFactory");
+        sessionService = new SessionService(sessionFactory);
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        templateEngine = Utils.getTemplateEngine(req);
         webContext = ThymeleafUtil.buildWebContext(req, resp);
         Cookie[] cookies = req.getCookies();
         checkCookies(req, resp, cookies);

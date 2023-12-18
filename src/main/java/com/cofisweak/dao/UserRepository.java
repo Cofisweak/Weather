@@ -3,6 +3,7 @@ package com.cofisweak.dao;
 import com.cofisweak.exception.UsernameAlreadyExistsException;
 import com.cofisweak.model.User;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
@@ -10,8 +11,8 @@ import javax.persistence.PersistenceException;
 import java.util.Optional;
 
 public class UserRepository extends BaseRepository<Long, User> {
-    public UserRepository() {
-        super(User.class);
+    public UserRepository(SessionFactory sessionFactory) {
+        super(sessionFactory, User.class);
     }
 
     @Override

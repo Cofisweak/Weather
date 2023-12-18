@@ -8,6 +8,8 @@ import com.cofisweak.service.SessionService;
 import com.cofisweak.servlet.BaseServlet;
 import com.cofisweak.util.SessionUtil;
 import com.cofisweak.util.Utils;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,8 +22,16 @@ import java.util.Map;
 
 @WebServlet("/register")
 public class RegisterServlet extends BaseServlet {
-    private final transient AuthService authService = new AuthService();
-    private final transient SessionService sessionService = new SessionService();
+    private transient AuthService authService;
+    private transient SessionService sessionService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        authService = new AuthService(sessionFactory);
+        sessionService = new SessionService(sessionFactory);
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (SessionUtil.isUserAuthed(req)) {

@@ -10,19 +10,34 @@ import com.cofisweak.service.weather.WeatherService;
 import com.cofisweak.servlet.BaseServlet;
 import com.cofisweak.util.SessionUtil;
 import com.cofisweak.util.Utils;
+import com.google.gson.Gson;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @WebServlet("/search")
 public class SearchServlet extends BaseServlet {
-    private final WeatherService weatherService = new OpenWeatherApiService();
-    private final LocationService locationService = new LocationService();
+    private WeatherService weatherService;
+    private LocationService locationService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ServletContext servletContext = config.getServletContext();
+        Gson gson = (Gson) servletContext.getAttribute("gson");
+        HttpClient httpClient = (HttpClient) servletContext.getAttribute("httpClient");
+        weatherService = new OpenWeatherApiService(gson, httpClient);
+        locationService = new LocationService(sessionFactory, gson, httpClient);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

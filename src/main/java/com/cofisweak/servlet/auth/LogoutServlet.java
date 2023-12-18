@@ -6,6 +6,8 @@ import com.cofisweak.service.SessionService;
 import com.cofisweak.servlet.BaseServlet;
 import com.cofisweak.util.SessionUtil;
 import com.cofisweak.util.Utils;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +18,13 @@ import java.util.Optional;
 
 @WebServlet("/logout")
 public class LogoutServlet extends BaseServlet {
-    private final transient SessionService sessionService = new SessionService();
+    private transient SessionService sessionService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        sessionService = new SessionService(sessionFactory);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {

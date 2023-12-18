@@ -1,13 +1,14 @@
 package com.cofisweak.dao;
 
 import com.cofisweak.model.Session;
+import org.hibernate.SessionFactory;
 
 import javax.persistence.Query;
 import java.util.UUID;
 
 public class SessionRepository extends BaseRepository<UUID, Session> {
-    public SessionRepository() {
-        super(Session.class);
+    public SessionRepository(SessionFactory sessionFactory) {
+        super(sessionFactory, Session.class);
     }
 
     public void removeExpiredSessions() {

@@ -4,6 +4,7 @@ import com.cofisweak.exception.LocationAlreadyExistsException;
 import com.cofisweak.model.Location;
 import com.cofisweak.model.User;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
@@ -11,8 +12,8 @@ import javax.persistence.PersistenceException;
 import java.util.List;
 
 public class LocationRepository extends BaseRepository<Long, Location> {
-    public LocationRepository() {
-        super(Location.class);
+    public LocationRepository(SessionFactory sessionFactory) {
+        super(sessionFactory, Location.class);
     }
 
     @Override

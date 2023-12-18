@@ -6,13 +6,18 @@ import com.cofisweak.exception.UserNotFoundException;
 import com.cofisweak.exception.UsernameAlreadyExistsException;
 import com.cofisweak.model.User;
 import lombok.SneakyThrows;
+import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Optional;
 
 public class AuthService {
-    private final UserRepository userRepository = new UserRepository();
+    private final UserRepository userRepository;
+
+    public AuthService(SessionFactory sessionFactory) {
+        userRepository = new UserRepository(sessionFactory);
+    }
 
     public User login(String username, String password) throws IncorrectPasswordException, UserNotFoundException {
         Optional<User> userOptional = userRepository.getUserByLogin(username);

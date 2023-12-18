@@ -3,13 +3,18 @@ package com.cofisweak.service;
 import com.cofisweak.dao.SessionRepository;
 import com.cofisweak.model.Session;
 import com.cofisweak.model.User;
+import org.hibernate.SessionFactory;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 public class SessionService {
-    private final SessionRepository sessionRepository = new SessionRepository();
+    private final SessionRepository sessionRepository;
+
+    public SessionService(SessionFactory sessionFactory) {
+        sessionRepository = new SessionRepository(sessionFactory);
+    }
 
     public Session createSession(User user) {
         LocalDateTime expiresAt = LocalDateTime.now().plusHours(1);

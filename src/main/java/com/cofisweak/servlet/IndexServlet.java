@@ -5,16 +5,31 @@ import com.cofisweak.model.Session;
 import com.cofisweak.model.User;
 import com.cofisweak.service.LocationService;
 import com.cofisweak.util.SessionUtil;
+import com.google.gson.Gson;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.List;
 
 @WebServlet(name = "indexServlet")
 public class IndexServlet extends BaseServlet {
-    private final LocationService locationService = new LocationService();
+    private LocationService locationService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ServletContext servletContext = config.getServletContext();
+        Gson gson = (Gson) servletContext.getAttribute("gson");
+        HttpClient httpClient = (HttpClient) servletContext.getAttribute("httpClient");
+        locationService = new LocationService(sessionFactory, gson, httpClient);
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (SessionUtil.isUserAuthed(req)) {
