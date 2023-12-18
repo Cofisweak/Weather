@@ -21,7 +21,7 @@ public class LocationRepository extends BaseRepository<Long, Location> {
             return super.save(object);
         } catch (PersistenceException e) {
             if (e.getCause() instanceof ConstraintViolationException) {
-                throw new LocationAlreadyExistsException("Location already exists in your follow list");
+                throw new LocationAlreadyExistsException("Location already exists in your follow list", e);
             }
         }
         return object;

@@ -31,7 +31,7 @@ public class OpenWeatherApiService implements WeatherService {
             String response = requestWeather(longitude, latitude);
             return gson.fromJson(response, WeatherResponseDto.class);
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new CannotGetApiResponseException("The request cannot be completed");
+            throw new CannotGetApiResponseException("The request cannot be completed", e);
         }
     }
 
@@ -47,7 +47,7 @@ public class OpenWeatherApiService implements WeatherService {
             String response = requestLocations(query);
             return getWeatherDtos(response);
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new CannotGetApiResponseException("The request cannot be completed");
+            throw new CannotGetApiResponseException("The request cannot be completed", e);
         }
     }
 

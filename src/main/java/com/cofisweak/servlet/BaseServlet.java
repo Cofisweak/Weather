@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
 
+@Log4j
 public class BaseServlet extends HttpServlet {
     private final SessionService sessionService = new SessionService();
     protected TemplateEngine templateEngine;
@@ -33,20 +35,25 @@ public class BaseServlet extends HttpServlet {
         checkCookies(req, resp, cookies);
 
         try {
+            log.debug(req.getMethod() + " " + req.getServletPath());
             super.service(req, resp);
         } catch (InvalidFieldException e) {
+            log.debug(e.getMessage(), e);
             resp.sendError(SC_BAD_REQUEST, e.getMessage());
         } catch (UnauthorizedException e) {
+            log.debug(e.getMessage(), e);
             resp.sendError(SC_FORBIDDEN, e.getMessage());
         } catch (LocationNotFoundException e) {
+            log.debug(e.getMessage(), e);
             resp.sendError(SC_NOT_FOUND, e.getMessage());
         } catch (LocationAlreadyExistsException e) {
+            log.debug(e.getMessage(), e);
             resp.sendError(SC_CONFLICT, e.getMessage());
         } catch (CannotGetApiResponseException e) {
+            log.error(e.getMessage(), e);
             resp.sendError(SC_SERVICE_UNAVAILABLE, e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause().printStackTrace();
+            log.error("Unhandled servlet error", e);
             throw e;
         }
     }
