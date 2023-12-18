@@ -10,6 +10,7 @@ Web application for viewing current weather. The user can register and add one o
 
 ### Deployment
 - Install PostgreSQL database
+- Init database scheme (init_db.sql)
 - Install Tomcat 10
 - Configure hibernate.cfg.xml
     - set url
