@@ -4,7 +4,6 @@ import com.cofisweak.dto.LocationInfoDto;
 import com.cofisweak.dto.WeatherDto;
 import com.cofisweak.dto.openweather.WeatherResponseDto;
 import com.cofisweak.exception.CannotGetApiResponseException;
-import com.cofisweak.mapper.LocationMapper;
 import com.cofisweak.mapper.WeatherMapper;
 import com.cofisweak.model.Location;
 import com.cofisweak.util.PropertiesUtil;
@@ -23,7 +22,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -50,29 +48,14 @@ public class OpenWeatherApiService implements WeatherService {
     }
 
     @Override
-    public List<WeatherDto> searchLocationsAndWeatherByQuery(String query) {
+    public List<LocationInfoDto> searchLocationsByQuery(String query) {
         try {
             String response = requestLocations(query);
-            return getWeatherDtos(response);
+            Type listType = new TypeToken<List<LocationInfoDto>>() {}.getType();
+            return gson.fromJson(response, listType);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new CannotGetApiResponseException("The request cannot be completed", e);
         }
-    }
-
-    private List<WeatherDto> getWeatherDtos(String content) {
-        Type listType = new TypeToken<List<LocationInfoDto>>() {
-        }.getType();
-        List<LocationInfoDto> dtoList = gson.fromJson(content, listType);
-
-        List<Location> locations = dtoList.stream().map(LocationMapper::mapFrom).toList();
-
-        List<WeatherDto> result = new ArrayList<>();
-        for (Location location : locations) {
-            WeatherResponseDto dto = searchWeatherByCoordinates(location.getLongitude(), location.getLatitude());
-            WeatherDto weatherDto = WeatherMapper.mapFrom(dto, location);
-            result.add(weatherDto);
-        }
-        return result;
     }
 
     private String requestWeather(BigDecimal longitude, BigDecimal latitude) throws URISyntaxException, IOException, InterruptedException {

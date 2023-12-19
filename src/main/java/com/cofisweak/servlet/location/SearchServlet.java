@@ -1,7 +1,9 @@
 package com.cofisweak.servlet.location;
 
+import com.cofisweak.dto.LocationInfoDto;
 import com.cofisweak.dto.WeatherCardActionButtonType;
 import com.cofisweak.dto.WeatherDto;
+import com.cofisweak.mapper.LocationMapper;
 import com.cofisweak.model.Location;
 import com.cofisweak.model.Session;
 import com.cofisweak.service.LocationService;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/search")
@@ -44,17 +47,38 @@ public class SearchServlet extends BaseServlet {
         String query = req.getParameter("q");
         if (!Utils.isFieldNotFilled(query)) {
             webContext.setVariable("query", query);
-            List<WeatherDto> weatherList = weatherService.searchLocationsAndWeatherByQuery(query);
-            if (SessionUtil.isUserAuthed(req)) {
-                Utils.setButtonTypesForWeatherList(weatherList, WeatherCardActionButtonType.CAN_FOLLOW);
-                checkIsListContainAlreadyFollowedLocations(req, weatherList);
-            } else {
-                Utils.setButtonTypesForWeatherList(weatherList, WeatherCardActionButtonType.NOT_AUTHORIZED);
-            }
+
+            List<Location> locations = getLocations(query);
+            List<WeatherDto> weatherList = getWeatherList(locations);
+
+            checkIsUserAuthed(req, weatherList);
             webContext.setVariable("weatherList", weatherList);
         }
 
         templateEngine.process("search", webContext, resp.getWriter());
+    }
+
+    private List<Location> getLocations(String query) {
+        List<LocationInfoDto> locationList = weatherService.searchLocationsByQuery(query);
+        return locationList.stream().map(LocationMapper::mapFrom).toList();
+    }
+
+    private List<WeatherDto> getWeatherList(List<Location> locations) {
+        List<WeatherDto> weatherList = new ArrayList<>();
+        for (Location location : locations) {
+            WeatherDto weatherDto = weatherService.getWeatherByLocation(location);
+            weatherList.add(weatherDto);
+        }
+        return weatherList;
+    }
+
+    private void checkIsUserAuthed(HttpServletRequest req, List<WeatherDto> weatherList) {
+        if (SessionUtil.isUserAuthed(req)) {
+            Utils.setButtonTypesForWeatherList(weatherList, WeatherCardActionButtonType.CAN_FOLLOW);
+            checkIsListContainAlreadyFollowedLocations(req, weatherList);
+        } else {
+            Utils.setButtonTypesForWeatherList(weatherList, WeatherCardActionButtonType.NOT_AUTHORIZED);
+        }
     }
 
     private void checkIsListContainAlreadyFollowedLocations(HttpServletRequest req, List<WeatherDto> weatherList) {
