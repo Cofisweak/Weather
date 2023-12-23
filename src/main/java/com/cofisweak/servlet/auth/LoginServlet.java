@@ -14,12 +14,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @WebServlet("/login")
 public class LoginServlet extends BaseServlet {
@@ -46,38 +42,39 @@ public class LoginServlet extends BaseServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        Map<String, Object> errors = validateRequest(username, password);
 
-        if (!errors.isEmpty()) {
-            webContext.setVariables(errors);
-            handleErrors(resp, webContext, username, templateEngine);
-            return;
+        if (isIncorrectUsername(username)) {
+            handleError("incorrectUsername", resp, null);
+        } else if (isIncorrectPassword(password)) {
+            handleError("incorrectPassword", resp, username);
+        } else {
+            handleLogin(req, resp, username, password);
         }
+    }
 
+    private void handleLogin(HttpServletRequest req, HttpServletResponse resp, String username, String password) throws IOException {
         try {
             User user = authService.login(username.trim(), password);
             Session session = sessionService.createSession(user);
             SessionUtil.saveSessionCookie(resp, session);
             Utils.redirectToMainPage(req, resp);
         } catch (UserNotFoundException | IncorrectPasswordException e) {
-            webContext.setVariable("isAuthorizationInvalid", true);
-            handleErrors(resp, webContext, username, templateEngine);
+            webContext.setVariable("isAuthorizationFailed", true);
+            handleError("isAuthorizationFailed", resp, username);
         }
     }
 
-    private static void handleErrors(HttpServletResponse resp, WebContext webContext, String username, TemplateEngine templateEngine) throws IOException {
+    private void handleError(String errorName, HttpServletResponse resp, String username) throws IOException {
+        webContext.setVariable(errorName, true);
         webContext.setVariable("inputLogin", username);
         templateEngine.process("login", webContext, resp.getWriter());
     }
 
-    private static Map<String, Object> validateRequest(String username, String password) {
-        Map<String, Object> errors = new HashMap<>();
-        if (Utils.isFieldNotFilled(username) || username.trim().length() < 3) {
-            errors.put("incorrectUsername", true);
-        }
-        if (Utils.isFieldNotFilled(password) || Utils.isInvalidPassword(password)) {
-            errors.put("incorrectPassword", true);
-        }
-        return errors;
+    private static boolean isIncorrectPassword(String password) {
+        return Utils.isFieldNotFilled(password) || Utils.isInvalidPassword(password);
+    }
+
+    private static boolean isIncorrectUsername(String username) {
+        return Utils.isFieldNotFilled(username) || username.trim().length() < 3;
     }
 }

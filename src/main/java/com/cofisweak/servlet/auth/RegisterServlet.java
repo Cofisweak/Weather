@@ -13,12 +13,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @WebServlet("/register")
 public class RegisterServlet extends BaseServlet {
@@ -47,42 +43,41 @@ public class RegisterServlet extends BaseServlet {
         String password = req.getParameter("password");
         String repeatPassword = req.getParameter("repeat-password");
 
-        Map<String, Object> errors = validateRequest(username, password, repeatPassword);
-
-        if (!errors.isEmpty()) {
-            webContext.setVariables(errors);
-            handleErrors(resp, webContext, username, templateEngine);
-            return;
+        if (Utils.isFieldNotFilled(username)) {
+            handleError("incorrectUsername", resp, null);
+        } else if (isUsernameLengthIncorrect(username)) {
+            handleError("tooShortUsername", resp, username);
+        } else if (isIncorrectPassword(password)) {
+            handleError("incorrectPassword", resp, username);
+        } else if (!password.equals(repeatPassword)) {
+            handleError("passwordsNotEquals", resp, username);
+        } else {
+            processRegistration(req, resp, username, password);
         }
+    }
 
+    private void handleError(String errorName, HttpServletResponse resp, String username) throws IOException {
+        webContext.setVariable(errorName, true);
+        webContext.setVariable("inputLogin", username);
+        templateEngine.process("register", webContext, resp.getWriter());
+    }
+
+    private void processRegistration(HttpServletRequest req, HttpServletResponse resp, String username, String password) throws IOException {
         try {
             User user = authService.register(username.trim(), password);
             Session session = sessionService.createSession(user);
             SessionUtil.saveSessionCookie(resp, session);
             Utils.redirectToMainPage(req, resp);
         } catch (UsernameAlreadyExistsException e) {
-            webContext.setVariable("usernameAlreadyExists", true);
-            handleErrors(resp, webContext, username, templateEngine);
+            handleError("usernameAlreadyExists", resp, username);
         }
     }
 
-    private static void handleErrors(HttpServletResponse resp, WebContext webContext, String username, TemplateEngine templateEngine) throws IOException {
-        webContext.setVariable("inputLogin", username);
-        templateEngine.process("register", webContext, resp.getWriter());
+    private static boolean isUsernameLengthIncorrect(String username) {
+        return username.trim().length() < 3;
     }
 
-    private static Map<String, Object> validateRequest(String username, String password, String repeatPassword) {
-        Map<String, Object> errors = new HashMap<>();
-        if (Utils.isFieldNotFilled(username)) {
-            errors.put("incorrectUsername", true);
-        } else if (username.trim().length() < 3) {
-            errors.put("tooShortUsername", true);
-        }
-        if (Utils.isFieldNotFilled(password) || Utils.isInvalidPassword(password)) {
-            errors.put("incorrectPassword", true);
-        } else if (!password.equals(repeatPassword)) {
-            errors.put("passwordsNotEquals", true);
-        }
-        return errors;
+    private static boolean isIncorrectPassword(String password) {
+        return Utils.isFieldNotFilled(password) || Utils.isInvalidPassword(password);
     }
 }

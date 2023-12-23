@@ -27,7 +27,7 @@
             <input type="password" class="form-control" name="password" required id="password"
                    placeholder="Enter password">
             <span th:if="${incorrectPassword}" class="form-text text-danger">Incorrect password</span>
-            <span th:if="${isAuthorizationInvalid}" class="form-text text-danger">Invalid username or password</span>
+            <span th:if="${isAuthorizationFailed}" class="form-text text-danger">Invalid username or password</span>
         </div>
         <button type="submit" class="btn btn-primary d-flex m-auto mt-4">Login</button>
     </form>
