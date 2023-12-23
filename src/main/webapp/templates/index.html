@@ -17,7 +17,7 @@
                 <div th:each="weather: ${weatherList}" th:insert="~{components/weather-card :: cardBody(${weather})}" class="weather-card"></div>
             </div>
         </th:block>
-        <h6 th:if="not ${isAuth}" class="text text-center mt-4">Log in to view the list of saved locations</h6>
+        <h6 th:unless="${isAuth}" class="text text-center mt-4">Log in to view the list of saved locations</h6>
     </section>
 </main>
 <th:block th:insert="~{components/footer}"/>
