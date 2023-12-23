@@ -17,7 +17,7 @@ public class Utils {
     }
 
     public static boolean isInvalidPassword(String username) {
-        return !username.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$");
+        return !username.matches("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$");
     }
 
     public static void redirectToMainPage(HttpServletRequest req, HttpServletResponse resp) throws IOException {
